@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 14:31:43 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/11/24 19:47:14 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/11/30 03:30:22 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,9 @@ void	ft_exec(t_ast *data, t_ast *pipeline_seq)
 {
 	char	**envp;
 
-	if (!ft_isbuiltin(data->ARGV[0]) ||  pipeline_seq->PIPES)
+
+	if (!ft_isbuiltin(data->ARGV[0]) || pipeline_seq->PIPES 
+		|| pipeline_seq->node.data.redirections)
 	{
 		if (dup2(data->IN_FD, 0) == -1 || dup2(data->OUT_FD, 1) == -1)
 		{

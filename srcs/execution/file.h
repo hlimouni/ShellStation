@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 21:42:28 by iariss            #+#    #+#             */
-/*   Updated: 2021/11/24 16:45:59 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/11/29 17:05:21 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ void	ft_pwd(void);
 void	ft_env(void);
 void	free_2d_array(char ***arr);
 int		ft_isbuiltin(char *builtin);
+void	ft_close_descriptors(t_ast *pipeline_seq);
 
 /***********************************************************/												
 /***********************************************************/												

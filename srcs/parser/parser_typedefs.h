@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 19:37:34 by iltafah           #+#    #+#             */
-/*   Updated: 2021/11/22 21:07:51 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/11/29 19:12:53 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ typedef struct s_pipe_content
 {
 	int		pipes_count;
 	int		*family;
+	int				og_in;
+	int				og_out;
 	t_dir	dir;
 }	t_pipe_content;
 

@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/20 00:34:20 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/11/24 18:40:08 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/11/30 02:41:08 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,9 @@ int	ft_redir_file(t_ast *data, t_redirection *redirs, int open_flag)
 
 	dir = *(redirs->type);
 	if (dir == '>' && data->OUT_FD != 1)
+	{
 		close(data->OUT_FD);
+	}
 	if (dir == '<' && data->IN_FD != 0)
 		close(data->IN_FD);
 	fd = open(redirs->file, open_flag, 0644);
@@ -143,9 +145,17 @@ int	ft_redir_file(t_ast *data, t_redirection *redirs, int open_flag)
 		return (1);
 	}
 	if (dir == '>')
+	{
 		data->OUT_FD = fd;
+		// dup2(data->OUT_FD, 1);
+		// close(data->OUT_FD);
+	}
 	if (dir == '<')
+	{
 		data->IN_FD = fd;
+		// dup2(data->IN_FD, 0);
+		// close(data->IN_FD);
+	}
 	return (0);
 }
 
@@ -176,6 +186,34 @@ int	handle_redirections(t_ast *curr_data)
 	}
 	return (0);
 }
+
+// int	handle_redirections(t_ast *curr_data)
+// {
+// 	t_redirection	*redirs;
+
+// 	redirs = curr_data->node.data.redirections;
+// 	while (redirs)
+// 	{
+// 		if (!(ft_strcmp(redirs->type, ">")))
+// 		{
+// 			if (ft_redir_file(curr_data, redirs, O_TRUNC | O_WRONLY
+// 				| O_CREAT))
+// 				return (1);
+// 		}
+// 		else if (!(ft_strcmp(redirs->type, "<")))
+// 		{
+// 			if (ft_redir_file(curr_data, redirs, O_RDONLY))
+// 				return (1);
+// 		}
+// 		else if (!(ft_strcmp(redirs->type, ">>")))
+// 			ft_redir_file(curr_data, redirs, O_APPEND | O_WRONLY
+// 				| O_CREAT);
+// 		// else if (!(ft_strcmp(redirs->type, "<<")))
+// 		// 	ft_herdoc(curr_data, redirs);
+// 		redirs = redirs->next;
+// 	}
+// 	return (0);
+// }
 
 int	ft_init_streams(t_ast *pipeline_seq)
 {
@@ -249,6 +287,8 @@ void	start_execution(t_ast *ast)
 		signal(SIGQUIT, handle_quit);
 		signal(SIGINT, handle_c);
 		pipes = curr_pipeline_seq->PIPES;
+		curr_pipeline_seq->node.pipe.og_in = dup(0);
+		curr_pipeline_seq->node.pipe.og_out = dup(1);
 		if (ft_init_streams(curr_pipeline_seq))
 			return ;//streams
 		curr_pipeline_seq->FAMILY = ft_calloc(pipes + 1, sizeof(int));
@@ -257,6 +297,8 @@ void	start_execution(t_ast *ast)
 		// 	return ;
 		ft_fork_processes(curr_simple_cmd, curr_pipeline_seq);
 		free(curr_pipeline_seq->FAMILY);
+		dup2(curr_pipeline_seq->node.pipe.og_in, 0);
+		dup2(curr_pipeline_seq->node.pipe.og_out, 1);
 		curr_pipeline_seq = curr_pipeline_seq->node.pipe.dir.next;
 	}
 }

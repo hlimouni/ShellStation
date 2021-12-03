@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/20 00:34:20 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/11/30 02:41:08 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/01 16:32:51 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,16 @@ void	ft_init_pipe(t_ast *curr_data, t_ast *prev_data)
 		curr_data->IN_FD = fd[0];
 }
 
+void	ft_heredoc(t_ast *data, t_redirection *redirs)
+{
+	int	fd[2];
+
+	pipe(fd);
+	write(fd[1], redirs->file, ft_strlen(redirs->file));
+	close(fd[1]);
+	data->IN_FD = fd[0];
+}
+
 int	ft_redir_file(t_ast *data, t_redirection *redirs, int open_flag)
 {
 	int	fd;
@@ -180,8 +190,8 @@ int	handle_redirections(t_ast *curr_data)
 		else if (!(ft_strcmp(redirs->type, ">>")))
 			ft_redir_file(curr_data, redirs, O_APPEND | O_WRONLY
 				| O_CREAT);
-		// else if (!(ft_strcmp(redirs->type, "<<")))
-		// 	ft_herdoc(curr_data, redirs);
+		else if (!(ft_strcmp(redirs->type, "<<")))
+			ft_heredoc(curr_data, redirs);
 		redirs = redirs->next;
 	}
 	return (0);

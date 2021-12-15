@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 14:31:43 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/11/30 03:30:22 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/15 15:37:49 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ int	ft_execbuiltin(t_ast *data)
 	else if (ret == __env)
 		ft_env();
 	else if (ret == __exit)
-		ft_exit(data, g_vars.last_err_num);
+		ft_exit(data, g_vars.prev_err_num);
 	if (ret)
 		return (0);
 	return (-1);
@@ -169,7 +169,6 @@ char	**get_env_array(void)
 	env_array[i] = NULL;
 	return (env_array);
 }
-
 
 void	ft_exec(t_ast *data, t_ast *pipeline_seq)
 {

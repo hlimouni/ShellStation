@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/20 00:34:20 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/01 16:32:51 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/15 14:35:42 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ t_ast	*ft_find_command(int pid, t_ast *pipeline_seq)
 	i = 0;
 	while (curr_smpl_cmd)
 	{
-		if (pipeline_seq->FAMILY[i] == pid)
+		if (pipeline_seq->PIDS[i] == pid)
 			return (curr_smpl_cmd->node.dir.bottom);
 		i++;
 		curr_smpl_cmd = curr_smpl_cmd->node.dir.next;
@@ -59,16 +59,14 @@ void	handle_c(int sig_num)
 	}
 }
 
-static int	ft_update_status(
-				int terminated,
-				int returned,
+static int	ft_update_status(int terminated, int returned,
 				t_ast	*pipeline_seq)
 {
 	int		signaled;
 	t_ast	*curr_data;
 
 	signaled = 0;
-	if (terminated == pipeline_seq->FAMILY[pipeline_seq->PIPES])
+	if (terminated == pipeline_seq->PIDS[pipeline_seq->PIPES])
 	{
 		if (!WTERMSIG(returned))
 			g_vars.last_err_num = WEXITSTATUS(returned);
@@ -270,8 +268,8 @@ void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
 		i = 0;
 		while (curr_simple_cmd)
 		{
-			pipeline_seq->FAMILY[i] = fork();
-			if (pipeline_seq->FAMILY[i] == 0)
+			pipeline_seq->PIDS[i] = fork();
+			if (pipeline_seq->PIDS[i] == 0)
 			{
 				signal(SIGQUIT, handle_child_quit);
 				signal(SIGINT, handle_child_c);
@@ -283,6 +281,7 @@ void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
 		}
 		wait_for_children(pipeline_seq);
 	}
+	g_vars.prev_err_num = g_vars.last_err_num;
 }
 
 void	start_execution(t_ast *ast)
@@ -300,13 +299,11 @@ void	start_execution(t_ast *ast)
 		curr_pipeline_seq->node.pipe.og_in = dup(0);
 		curr_pipeline_seq->node.pipe.og_out = dup(1);
 		if (ft_init_streams(curr_pipeline_seq))
-			return ;//streams
-		curr_pipeline_seq->FAMILY = ft_calloc(pipes + 1, sizeof(int));
+			return ;
+		curr_pipeline_seq->PIDS = malloc((pipes + 1) * sizeof(int));
 		curr_simple_cmd = curr_pipeline_seq->node.pipe.dir.bottom;
-		// if (curr_simple_cmd == NULL)
-		// 	return ;
 		ft_fork_processes(curr_simple_cmd, curr_pipeline_seq);
-		free(curr_pipeline_seq->FAMILY);
+		free(curr_pipeline_seq->PIDS);
 		dup2(curr_pipeline_seq->node.pipe.og_in, 0);
 		dup2(curr_pipeline_seq->node.pipe.og_out, 1);
 		curr_pipeline_seq = curr_pipeline_seq->node.pipe.dir.next;

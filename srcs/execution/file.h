@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 21:42:28 by iariss            #+#    #+#             */
-/*   Updated: 2021/11/29 17:05:21 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/15 13:43:40 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ enum	e_builtins
 # define ARGC node.data.args_vec.used_size
 # define ARGV node.data.args_vec.elements
 # define PIPES node.pipe.pipes_count
-# define FAMILY node.pipe.family
+# define PIDS node.pipe.pids
 # define OUT_FD node.data.out_fd
 # define IN_FD node.data.in_fd
 

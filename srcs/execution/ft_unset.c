@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 15:50:57 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/11/10 19:00:06 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/16 18:21:28 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,17 +60,21 @@ void	ft_unset(t_ast *data)
 		if (is_argvalid(data->ARGV[j_args]))
 		{
 			j_env = 0;
+			// printf("used size %d\n", g_vars.env_table.name.used_size);
 			while (j_env < g_vars.env_table.name.used_size)
 			{
 				if (!ft_strcmp(data->ARGV[j_args],
 						g_vars.env_table.name.elements[j_env]))
 				{
+					// printf("found path\n");
 					delete_element_at_index(&g_vars.env_table.name, j_env);
-					delete_element_at_index(&g_vars.env_table.name, j_env);
+					delete_element_at_index(&g_vars.env_table.value, j_env);
 					return ;
 				}
 				j_env++;
 			}
+			// printf("%d\n", j_env);
+			// printf("what about here\n");
 		}
 		j_args++;
 	}

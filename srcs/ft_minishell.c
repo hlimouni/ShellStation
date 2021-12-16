@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/20 00:34:20 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/16 08:14:55 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/16 16:08:01 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,24 +59,19 @@ void	handle_c(int sig_num)
 	}
 }
 
-static int	ft_update_status(int terminated, int status,
+static void	ft_update_status(int terminated_pid, int status,
 				t_ast	*pipeline_seq)
 {
-	int		signaled;
 	t_ast	*curr_data;
 
-	signaled = 0;
-	if (terminated == pipeline_seq->PIDS[pipeline_seq->PIPES])
+	if (terminated_pid == pipeline_seq->PIDS[pipeline_seq->PIPES])
 	{
 		if (!WTERMSIG(status))
 			g_vars.last_err_num = WEXITSTATUS(status);
 		else
-		{
-			signaled = 1;
 			g_vars.last_err_num = WTERMSIG(status) + 128;
-		}
 	}
-	curr_data = ft_find_command(terminated, pipeline_seq);
+	curr_data = ft_find_command(terminated_pid, pipeline_seq);
 	if (curr_data)
 	{
 		if (curr_data->OUT_FD != 1)
@@ -84,27 +79,18 @@ static int	ft_update_status(int terminated, int status,
 		if (curr_data->IN_FD != 0)
 			close(curr_data->IN_FD);
 	}
-	return (signaled);
 }
 
 static void	wait_for_children(t_ast *pipeline_seq)
 {
 	int		i;
 	int		status;
-	int		signaled;
 
-	signaled = 0;
 	i = 0;
 	while (i <= pipeline_seq->PIPES)
 	{
-		signaled += ft_update_status(wait(&status), status, pipeline_seq);
+		ft_update_status(wait(&status), status, pipeline_seq);
 		i++;
-	}
-	if (signaled)
-	{
-		if (g_vars.last_err_num == 131)
-			ft_putstr_fd("Quit: 3", 1);
-		// ft_putstr_fd("\n", 1);
 	}
 }
 
@@ -128,7 +114,9 @@ void	ft_heredoc(t_ast *data, t_redirection *redirs)
 	int	fd[2];
 
 	pipe(fd);
-	write(fd[1], redirs->file, ft_strlen(redirs->file));
+	if (!redirs->next ||
+		(redirs->next && !access(redirs->next->file, R_OK | W_OK)))
+		write(fd[1], redirs->file, ft_strlen(redirs->file));
 	close(fd[1]);
 	data->IN_FD = fd[0];
 }
@@ -140,30 +128,20 @@ int	ft_redir_file(t_ast *data, t_redirection *redirs, int open_flag)
 
 	dir = *(redirs->type);
 	if (dir == '>' && data->OUT_FD != 1)
-	{
 		close(data->OUT_FD);
-	}
 	if (dir == '<' && data->IN_FD != 0)
 		close(data->IN_FD);
 	fd = open(redirs->file, open_flag, 0644);
 	if (fd == -1)
 	{
-		perror("minishell");
+		printf("minishell: %s: %s\n", redirs->file, strerror(errno));
 		g_vars.last_err_num = 1;
 		return (1);
 	}
 	if (dir == '>')
-	{
 		data->OUT_FD = fd;
-		// dup2(data->OUT_FD, 1);
-		// close(data->OUT_FD);
-	}
 	if (dir == '<')
-	{
 		data->IN_FD = fd;
-		// dup2(data->IN_FD, 0);
-		// close(data->IN_FD);
-	}
 	return (0);
 }
 
@@ -186,42 +164,17 @@ int	handle_redirections(t_ast *curr_data)
 				return (1);
 		}
 		else if (!(ft_strcmp(redirs->type, ">>")))
-			ft_redir_file(curr_data, redirs, O_APPEND | O_WRONLY
-				| O_CREAT);
+		{
+			if (ft_redir_file(curr_data, redirs, O_APPEND | O_WRONLY
+				| O_CREAT))
+				return (1);
+		}
 		else if (!(ft_strcmp(redirs->type, "<<")))
 			ft_heredoc(curr_data, redirs);
 		redirs = redirs->next;
 	}
 	return (0);
 }
-
-// int	handle_redirections(t_ast *curr_data)
-// {
-// 	t_redirection	*redirs;
-
-// 	redirs = curr_data->node.data.redirections;
-// 	while (redirs)
-// 	{
-// 		if (!(ft_strcmp(redirs->type, ">")))
-// 		{
-// 			if (ft_redir_file(curr_data, redirs, O_TRUNC | O_WRONLY
-// 				| O_CREAT))
-// 				return (1);
-// 		}
-// 		else if (!(ft_strcmp(redirs->type, "<")))
-// 		{
-// 			if (ft_redir_file(curr_data, redirs, O_RDONLY))
-// 				return (1);
-// 		}
-// 		else if (!(ft_strcmp(redirs->type, ">>")))
-// 			ft_redir_file(curr_data, redirs, O_APPEND | O_WRONLY
-// 				| O_CREAT);
-// 		// else if (!(ft_strcmp(redirs->type, "<<")))
-// 		// 	ft_herdoc(curr_data, redirs);
-// 		redirs = redirs->next;
-// 	}
-// 	return (0);
-// }
 
 int	ft_init_streams(t_ast *pipeline_seq)
 {
@@ -247,22 +200,13 @@ int	ft_init_streams(t_ast *pipeline_seq)
 	return (0);
 }
 
-// void	child_dup(t_piping *num, t_ast *curr_simple_cmd)
-// {
-// 	if (curr_simple_cmd->node.dir.next)
-// 		dup2(num->p[num->pipe_index + 1], 1);
-// 	if (num->pid_index != 0)
-// 		dup2(num->p[num->pipe_index - 2], 0);
-// }
-
 void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
 {
 	t_ast	*curr_data;
-	static	int prev_err_num = 0;
 	int		i;
 
 	curr_data = curr_simple_cmd->node.dir.bottom;
-	curr_data->node.data.prev_errnum = prev_err_num;
+	curr_data->node.data.prev_errnum = curr_simple_cmd->node.data.prev_errnum;
 	if (!pipeline_seq->PIPES && ft_isbuiltin(curr_data->ARGV[0]))
 		ft_exec(curr_data, pipeline_seq);
 	else
@@ -283,13 +227,13 @@ void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
 		}
 		wait_for_children(pipeline_seq);
 	}
-	prev_err_num = g_vars.last_err_num;
 }
 
 void	start_execution(t_ast *ast)
 {
 	t_ast		*curr_pipeline_seq;
 	t_ast		*curr_simple_cmd;
+	static	int	prev_err_num = 0;
 	int			pipes;
 
 	curr_pipeline_seq = ast->node.dir.bottom;
@@ -301,15 +245,17 @@ void	start_execution(t_ast *ast)
 		curr_pipeline_seq->node.pipe.og_in = dup(0);
 		curr_pipeline_seq->node.pipe.og_out = dup(1);
 		if (ft_init_streams(curr_pipeline_seq))
-			return ;
+			break ;
 		curr_pipeline_seq->PIDS = malloc((pipes + 1) * sizeof(int));
 		curr_simple_cmd = curr_pipeline_seq->node.pipe.dir.bottom;
+		curr_simple_cmd->node.data.prev_errnum = prev_err_num;
 		ft_fork_processes(curr_simple_cmd, curr_pipeline_seq);
 		free(curr_pipeline_seq->PIDS);
 		dup2(curr_pipeline_seq->node.pipe.og_in, 0);
 		dup2(curr_pipeline_seq->node.pipe.og_out, 1);
 		curr_pipeline_seq = curr_pipeline_seq->node.pipe.dir.next;
 	}
+	prev_err_num = g_vars.last_err_num;
 }
 
 void	initialize_main_vars(t_main_data *main_vars)

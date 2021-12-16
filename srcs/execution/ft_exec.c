@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 14:31:43 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/15 15:37:49 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/16 08:17:55 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ int	ft_execbuiltin(t_ast *data)
 	else if (ret == __env)
 		ft_env();
 	else if (ret == __exit)
-		ft_exit(data, g_vars.prev_err_num);
+		ft_exit(data);
 	if (ret)
 		return (0);
 	return (-1);
@@ -190,6 +190,7 @@ void	ft_exec(t_ast *data, t_ast *pipeline_seq)
 	if (data->ARGV[0][0] == '/' || !ft_strncmp(data->ARGV[0], "./", 2))
 	{
 		execve(data->ARGV[0], data->ARGV, envp);
+		perror("minishell");
 		ft_error(data->ARGV[0], "No such file or directory");
 	}
 	else

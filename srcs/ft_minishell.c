@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/20 00:34:20 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/15 14:35:42 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/16 08:14:55 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	handle_c(int sig_num)
 	}
 }
 
-static int	ft_update_status(int terminated, int returned,
+static int	ft_update_status(int terminated, int status,
 				t_ast	*pipeline_seq)
 {
 	int		signaled;
@@ -68,12 +68,12 @@ static int	ft_update_status(int terminated, int returned,
 	signaled = 0;
 	if (terminated == pipeline_seq->PIDS[pipeline_seq->PIPES])
 	{
-		if (!WTERMSIG(returned))
-			g_vars.last_err_num = WEXITSTATUS(returned);
+		if (!WTERMSIG(status))
+			g_vars.last_err_num = WEXITSTATUS(status);
 		else
 		{
 			signaled = 1;
-			g_vars.last_err_num = WTERMSIG(returned) + 128;
+			g_vars.last_err_num = WTERMSIG(status) + 128;
 		}
 	}
 	curr_data = ft_find_command(terminated, pipeline_seq);
@@ -90,21 +90,21 @@ static int	ft_update_status(int terminated, int returned,
 static void	wait_for_children(t_ast *pipeline_seq)
 {
 	int		i;
-	int		returned;
+	int		status;
 	int		signaled;
 
 	signaled = 0;
 	i = 0;
 	while (i <= pipeline_seq->PIPES)
 	{
-		signaled += ft_update_status(wait(&returned), returned, pipeline_seq);
+		signaled += ft_update_status(wait(&status), status, pipeline_seq);
 		i++;
 	}
 	if (signaled)
 	{
 		if (g_vars.last_err_num == 131)
 			ft_putstr_fd("Quit: 3", 1);
-		ft_putstr_fd("\n", 1);
+		// ft_putstr_fd("\n", 1);
 	}
 }
 
@@ -258,9 +258,11 @@ int	ft_init_streams(t_ast *pipeline_seq)
 void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
 {
 	t_ast	*curr_data;
+	static	int prev_err_num = 0;
 	int		i;
 
 	curr_data = curr_simple_cmd->node.dir.bottom;
+	curr_data->node.data.prev_errnum = prev_err_num;
 	if (!pipeline_seq->PIPES && ft_isbuiltin(curr_data->ARGV[0]))
 		ft_exec(curr_data, pipeline_seq);
 	else
@@ -281,7 +283,7 @@ void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
 		}
 		wait_for_children(pipeline_seq);
 	}
-	g_vars.prev_err_num = g_vars.last_err_num;
+	prev_err_num = g_vars.last_err_num;
 }
 
 void	start_execution(t_ast *ast)

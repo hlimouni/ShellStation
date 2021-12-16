@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/14 21:54:28 by iltafah           #+#    #+#             */
-/*   Updated: 2021/12/15 14:27:06 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/16 08:07:40 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ typedef struct s_gvars
 	t_rdline		rdl_vars;
 	t_env_table		env_table;
 	int				last_err_num;
-	int				prev_err_num;
 }				t_gvars;
 
 typedef struct s_main_data

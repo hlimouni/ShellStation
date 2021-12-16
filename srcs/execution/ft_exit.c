@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/12 17:22:02 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/11/12 18:46:12 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/16 08:06:48 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	numeric_arg_error(char *arg)
 	
 }
 
-void	ft_exit(t_ast *data, int exit_num)
+void	ft_exit(t_ast *data)
 {
 	long	num;
 
@@ -105,5 +105,5 @@ void	ft_exit(t_ast *data, int exit_num)
 	overwrite_history_file(&g_vars.rdl_vars);
 	if (data->ARGV[1])
 		exit(ft_atoi(data->ARGV[1]));
-	exit(exit_num);
+	exit(data->node.data.prev_errnum);
 }

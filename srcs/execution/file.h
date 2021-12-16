@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 21:42:28 by iariss            #+#    #+#             */
-/*   Updated: 2021/12/15 13:43:40 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/16 08:06:02 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	ft_export(t_ast *data);
 void	ft_unset(t_ast *data);
 void	ft_cd(t_ast *data);
 void	ft_echo(t_ast *data);
-void	ft_exit(t_ast *data, int exit_num);
+void	ft_exit(t_ast *data);
 void	ft_exec(t_ast *data, t_ast *pipeline_seq);
 void	ft_pwd(void);
 void	ft_env(void);

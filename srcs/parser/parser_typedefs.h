@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 19:37:34 by iltafah           #+#    #+#             */
-/*   Updated: 2021/12/15 13:43:16 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/16 08:04:48 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ typedef struct s_pipe_content
 typedef struct s_data_content
 {
 	t_str_vec		args_vec;
+	int				prev_errnum;
 	int				in_fd;
 	int				out_fd;
 	t_redirection	*redirections;

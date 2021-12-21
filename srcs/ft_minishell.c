@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/20 00:34:20 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/16 16:08:01 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/21 13:36:57 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,40 @@ void	handle_c(int sig_num)
 		g_vars.last_err_num = 130;
 		write(2, "\n", 1);
 	}
+}
+
+void	sig_handler_child(int sig_num)
+{
+	if (sig_num == SIGINT)
+		g_vars.last_err_num = 130;
+	if (sig_num == SIGQUIT)
+		g_vars.last_err_num = 131;
+}
+
+void	sig_handler_main(int sig_num)
+{
+	if (sig_num == SIGINT)
+	{
+		g_vars.last_err_num = 130;
+		write(2, "\n", 1);
+	}
+	if (sig_num == SIGQUIT)
+	{
+		g_vars.last_err_num = 131;
+		write(2, "Quit: 3\n", 8);
+	}
+}
+
+void	main_signals(void)
+{
+	signal(SIGINT, sig_handler_main);
+	signal(SIGQUIT, sig_handler_main);
+}
+
+void	child_signals(void)
+{
+	signal(SIGINT, sig_handler_child);
+	signal(SIGQUIT, sig_handler_child);
 }
 
 static void	ft_update_status(int terminated_pid, int status,
@@ -145,6 +179,28 @@ int	ft_redir_file(t_ast *data, t_redirection *redirs, int open_flag)
 	return (0);
 }
 
+int	file_redirs(t_redirection *redirs, t_ast *curr_data)
+{
+	if (!(ft_strcmp(redirs->type, ">")))
+	{
+		if (ft_redir_file(curr_data, redirs, O_TRUNC | O_WRONLY
+			| O_CREAT))
+			return (1);
+	}
+	else if (!(ft_strcmp(redirs->type, "<")))
+	{
+		if (ft_redir_file(curr_data, redirs, O_RDONLY))
+			return (1);
+	}
+	else if (!(ft_strcmp(redirs->type, ">>")))
+	{
+		if (ft_redir_file(curr_data, redirs, O_APPEND | O_WRONLY
+			| O_CREAT))
+			return (1);
+	}
+	return (0);
+}
+
 int	handle_redirections(t_ast *curr_data)
 {
 	t_redirection	*redirs;
@@ -152,29 +208,48 @@ int	handle_redirections(t_ast *curr_data)
 	redirs = curr_data->node.data.redirections;
 	while (redirs)
 	{
-		if (!(ft_strcmp(redirs->type, ">")))
-		{
-			if (ft_redir_file(curr_data, redirs, O_TRUNC | O_WRONLY
-				| O_CREAT))
-				return (1);
-		}
-		else if (!(ft_strcmp(redirs->type, "<")))
-		{
-			if (ft_redir_file(curr_data, redirs, O_RDONLY))
-				return (1);
-		}
-		else if (!(ft_strcmp(redirs->type, ">>")))
-		{
-			if (ft_redir_file(curr_data, redirs, O_APPEND | O_WRONLY
-				| O_CREAT))
-				return (1);
-		}
-		else if (!(ft_strcmp(redirs->type, "<<")))
+		if (!(ft_strcmp(redirs->type, "<<")))
 			ft_heredoc(curr_data, redirs);
+		else
+		{
+			if (file_redirs(redirs, curr_data))
+				return (1);
+		}
 		redirs = redirs->next;
 	}
 	return (0);
 }
+
+// int	handle_redirections(t_ast *curr_data)
+// {
+// 	t_redirection	*redirs;
+
+// 	redirs = curr_data->node.data.redirections;
+// 	while (redirs)
+// 	{
+// 		if (!(ft_strcmp(redirs->type, ">")))
+// 		{
+// 			if (ft_redir_file(curr_data, redirs, O_TRUNC | O_WRONLY
+// 				| O_CREAT))
+// 				return (1);
+// 		}
+// 		else if (!(ft_strcmp(redirs->type, "<")))
+// 		{
+// 			if (ft_redir_file(curr_data, redirs, O_RDONLY))
+// 				return (1);
+// 		}
+// 		else if (!(ft_strcmp(redirs->type, ">>")))
+// 		{
+// 			if (ft_redir_file(curr_data, redirs, O_APPEND | O_WRONLY
+// 				| O_CREAT))
+// 				return (1);
+// 		}
+// 		else if (!(ft_strcmp(redirs->type, "<<")))
+// 			ft_heredoc(curr_data, redirs);
+// 		redirs = redirs->next;
+// 	}
+// 	return (0);
+// }
 
 int	ft_init_streams(t_ast *pipeline_seq)
 {
@@ -217,10 +292,8 @@ void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
 			pipeline_seq->PIDS[i] = fork();
 			if (pipeline_seq->PIDS[i] == 0)
 			{
-				signal(SIGQUIT, handle_child_quit);
-				signal(SIGINT, handle_child_c);
-				curr_data = curr_simple_cmd->node.dir.bottom;
-				ft_exec(curr_data, pipeline_seq);
+				child_signals();
+				ft_exec(curr_simple_cmd->node.dir.bottom, pipeline_seq);
 			}
 			i++;
 			curr_simple_cmd = curr_simple_cmd->node.dir.next;
@@ -229,24 +302,22 @@ void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
 	}
 }
 
-void	start_execution(t_ast *ast)
+void	execute_line(t_ast *ast)
 {
 	t_ast		*curr_pipeline_seq;
 	t_ast		*curr_simple_cmd;
 	static	int	prev_err_num = 0;
-	int			pipes;
 
 	curr_pipeline_seq = ast->node.dir.bottom;
 	while (curr_pipeline_seq)
 	{
-		signal(SIGQUIT, handle_quit);
-		signal(SIGINT, handle_c);
-		pipes = curr_pipeline_seq->PIPES;
+		main_signals();
 		curr_pipeline_seq->node.pipe.og_in = dup(0);
 		curr_pipeline_seq->node.pipe.og_out = dup(1);
 		if (ft_init_streams(curr_pipeline_seq))
 			break ;
-		curr_pipeline_seq->PIDS = malloc((pipes + 1) * sizeof(int));
+		curr_pipeline_seq->PIDS = malloc((curr_pipeline_seq->PIPES + 1)
+			* sizeof(int));
 		curr_simple_cmd = curr_pipeline_seq->node.pipe.dir.bottom;
 		curr_simple_cmd->node.data.prev_errnum = prev_err_num;
 		ft_fork_processes(curr_simple_cmd, curr_pipeline_seq);
@@ -287,7 +358,7 @@ int	main(int argc, char **argv, char **env)
 				continue ;
 			}
 			create_abstract_syntax_tree(&main_vars.ast, main_vars.tokens_list);
-			start_execution(main_vars.ast);
+			execute_line(main_vars.ast);
 			free_main_allocated_memory(&main_vars);
 		}
 	}

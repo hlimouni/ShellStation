@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 14:31:43 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/16 11:34:45 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/21 14:06:48 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,20 +116,33 @@ void	ft_close_descriptors(t_ast *pipeline_seq)
 	}
 }
 
+char	*get_env_value(char *name)
+{
+	int		i;
+
+	i = 0;
+	while (g_vars.env_table.name.elements[i] != NULL)
+	{
+		if (ft_strcmp(g_vars.env_table.name.elements[i], name) == 0)
+			return (g_vars.env_table.value.elements[i]);
+		i++;
+	}
+	return (NULL);
+}
+
+
 static void	ft_traverse_binaries(t_ast *data, char **envp)
 {
 	int		i;
 	char	*newpath;
 	char	**paths;
-	char	*path_value;
 
 	if (ft_execbuiltin(data) == -1)
 	{
 		execve(data->ARGV[0], data->ARGV, envp);
-		path_value = get_value_of_env_name(g_vars.env_table, "PATH");
-		if (path_value)
+		if (get_env_value("PATH"))
 		{
-			paths = ft_split(path_value, ':');
+			paths = ft_split(get_env_value("PATH"), ':');
 			i = 0;
 			while (paths[i])
 			{
@@ -170,6 +183,17 @@ char	**get_env_array(void)
 	return (env_array);
 }
 
+void	cmd_traverse(t_ast *data, char **envp)
+{
+	if (data->ARGV[0][0] == '/' || !ft_strncmp(data->ARGV[0], "./", 2))
+	{
+		execve(data->ARGV[0], data->ARGV, envp);
+		ft_error(data->ARGV[0], "No such file or directory");
+	}
+	else
+		ft_traverse_binaries(data, envp);
+}
+
 void	ft_exec(t_ast *data, t_ast *pipeline_seq)
 {
 	char	**envp;
@@ -187,13 +211,7 @@ void	ft_exec(t_ast *data, t_ast *pipeline_seq)
 			data->OUT_FD = 1;
 	}
 	envp = get_env_array();
-	if (data->ARGV[0][0] == '/' || !ft_strncmp(data->ARGV[0], "./", 2))
-	{
-		execve(data->ARGV[0], data->ARGV, envp);
-		ft_error(data->ARGV[0], "No such file or directory");
-	}
-	else
-		ft_traverse_binaries(data, envp);
+	cmd_traverse(data, envp);
 	free_2d_array(&envp);
 	if (pipeline_seq->PIPES || !ft_isbuiltin(data->ARGV[0]))
 	{

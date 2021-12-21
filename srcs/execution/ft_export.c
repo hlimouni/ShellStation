@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/03 11:02:38 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/11/10 20:31:38 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/21 15:41:41 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,7 +155,10 @@ void	add_valid_env_variable(char *arg, int valid_namelen)
 		add_new_element(&g_vars.env_table.value,
 		ft_strdup(&arg[valid_namelen + 1]));
 	else
+	{
 		add_new_element(&g_vars.env_table.value, NULL);
+		printf("null value added\n");
+	}
 }
 
 void	update_env(t_ast *data)

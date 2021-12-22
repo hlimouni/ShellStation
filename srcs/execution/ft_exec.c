@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 14:31:43 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/21 14:06:48 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/22 19:43:29 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ int	ft_error(char *name, char *desc)
 	ft_putstr_fd("\n", 2);
 	return (1);
 }
-
 
 int	ft_convert_builtin(char *builtin)
 {
@@ -81,24 +80,6 @@ int	ft_execbuiltin(t_ast *data)
 	return (-1);
 }
 
-// t_ast	*get_curr_smpl_cmd_node(t_ast *pipeline_seq)
-// {
-// 	static t_ast	*curr_smpl_cmd = NULL;
-// 	static int		first = 1;
-
-// 	if (pipeline_seq)
-// 	{
-// 		if (first == 1)
-// 			curr_smpl_cmd = pipeline_seq->node.pipe.dir.bottom;
-// 		else if (curr_smpl_cmd != NULL)
-// 			curr_smpl_cmd = curr_smpl_cmd->node.dir.next;
-// 		first++;
-// 	}
-// 	if (curr_smpl_cmd == NULL)
-// 		first = 1;
-// 	return (curr_smpl_cmd);
-// }
-
 void	ft_close_descriptors(t_ast *pipeline_seq)
 {
 	t_ast	*curr_smpl_cmd;
@@ -129,7 +110,6 @@ char	*get_env_value(char *name)
 	}
 	return (NULL);
 }
-
 
 static void	ft_traverse_binaries(t_ast *data, char **envp)
 {
@@ -162,21 +142,21 @@ static void	ft_traverse_binaries(t_ast *data, char **envp)
 char	**get_env_array(void)
 {
 	int		i;
-	int		size;
+	char	*tmp_value;
 	char	**name;
 	char	**value;
 	char	**env_array;
 
 	i = 0;
-	size = g_vars.env_table.name.used_size + 1;
-	env_array = malloc(size * sizeof(char *));
+	env_array = malloc((g_vars.env_table.name.used_size + 1) * sizeof(char *));
 	name = g_vars.env_table.name.elements;
 	value = g_vars.env_table.value.elements;
 	while (name[i])
 	{
+		tmp_value = value[i];
 		if (value[i] == NULL)
-			value[i] = "";
-		env_array[i] = ft_strjoin3(name[i], "=", value[i]);
+			tmp_value = "";
+		env_array[i] = ft_strjoin3(name[i], "=", tmp_value);
 		i++;
 	}
 	env_array[i] = NULL;
@@ -198,8 +178,7 @@ void	ft_exec(t_ast *data, t_ast *pipeline_seq)
 {
 	char	**envp;
 
-
-	if (!ft_isbuiltin(data->ARGV[0]) || pipeline_seq->PIPES 
+	if (!ft_isbuiltin(data->ARGV[0]) || pipeline_seq->PIPES
 		|| pipeline_seq->node.data.redirections)
 	{
 		if (dup2(data->IN_FD, 0) == -1 || dup2(data->OUT_FD, 1) == -1)
@@ -227,4 +206,3 @@ int	ft_isbuiltin(char *builtin)
 		return (1);
 	return (0);
 }
-

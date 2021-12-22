@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 21:42:28 by iariss            #+#    #+#             */
-/*   Updated: 2021/12/16 08:06:02 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/22 20:34:00 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,6 @@
 # include <signal.h>
 # include <sys/stat.h> 
 # include "../parser/parser_typedefs.h"
-
-/***********************************************************/												
-/***********************************************************/
-
 # include <sys/types.h>
 # include <sys/wait.h>
 # include "../vectors/vectors.h"

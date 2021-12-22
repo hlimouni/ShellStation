@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/20 00:34:20 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/21 13:36:57 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/22 19:40:37 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 t_ast	*ft_find_command(int pid, t_ast *pipeline_seq)
 {
-	int	i;
+	int		i;
 	t_ast	*curr_smpl_cmd;
 
 	curr_smpl_cmd = pipeline_seq->node.pipe.dir.bottom;
@@ -27,36 +27,6 @@ t_ast	*ft_find_command(int pid, t_ast *pipeline_seq)
 		curr_smpl_cmd = curr_smpl_cmd->node.dir.next;
 	}
 	return (NULL);
-}
-
-void	handle_child_quit(int sig_num)
-{
-	if (sig_num == SIGQUIT)
-		g_vars.last_err_num = 131;
-}
-
-void	handle_child_c(int sig_num)
-{
-	if (sig_num == SIGINT)
-		g_vars.last_err_num = 130;
-}
-
-void	handle_quit(int sig_num)
-{
-	if (sig_num == SIGQUIT)
-	{
-		g_vars.last_err_num = 131;
-		write(2, "Quit: 3\n", 8);
-	}
-}
-
-void	handle_c(int sig_num)
-{
-	if (sig_num == SIGINT)
-	{
-		g_vars.last_err_num = 130;
-		write(2, "\n", 1);
-	}
 }
 
 void	sig_handler_child(int sig_num)
@@ -148,8 +118,8 @@ void	ft_heredoc(t_ast *data, t_redirection *redirs)
 	int	fd[2];
 
 	pipe(fd);
-	if (!redirs->next ||
-		(redirs->next && !access(redirs->next->file, R_OK | W_OK)))
+	if (!redirs->next
+		|| (redirs->next && !access(redirs->next->file, R_OK | W_OK)))
 		write(fd[1], redirs->file, ft_strlen(redirs->file));
 	close(fd[1]);
 	data->IN_FD = fd[0];
@@ -157,8 +127,8 @@ void	ft_heredoc(t_ast *data, t_redirection *redirs)
 
 int	ft_redir_file(t_ast *data, t_redirection *redirs, int open_flag)
 {
-	int	fd;
-	char dir;
+	int		fd;
+	char	dir;
 
 	dir = *(redirs->type);
 	if (dir == '>' && data->OUT_FD != 1)
@@ -184,7 +154,7 @@ int	file_redirs(t_redirection *redirs, t_ast *curr_data)
 	if (!(ft_strcmp(redirs->type, ">")))
 	{
 		if (ft_redir_file(curr_data, redirs, O_TRUNC | O_WRONLY
-			| O_CREAT))
+				| O_CREAT))
 			return (1);
 	}
 	else if (!(ft_strcmp(redirs->type, "<")))
@@ -195,7 +165,7 @@ int	file_redirs(t_redirection *redirs, t_ast *curr_data)
 	else if (!(ft_strcmp(redirs->type, ">>")))
 	{
 		if (ft_redir_file(curr_data, redirs, O_APPEND | O_WRONLY
-			| O_CREAT))
+				| O_CREAT))
 			return (1);
 	}
 	return (0);
@@ -219,37 +189,6 @@ int	handle_redirections(t_ast *curr_data)
 	}
 	return (0);
 }
-
-// int	handle_redirections(t_ast *curr_data)
-// {
-// 	t_redirection	*redirs;
-
-// 	redirs = curr_data->node.data.redirections;
-// 	while (redirs)
-// 	{
-// 		if (!(ft_strcmp(redirs->type, ">")))
-// 		{
-// 			if (ft_redir_file(curr_data, redirs, O_TRUNC | O_WRONLY
-// 				| O_CREAT))
-// 				return (1);
-// 		}
-// 		else if (!(ft_strcmp(redirs->type, "<")))
-// 		{
-// 			if (ft_redir_file(curr_data, redirs, O_RDONLY))
-// 				return (1);
-// 		}
-// 		else if (!(ft_strcmp(redirs->type, ">>")))
-// 		{
-// 			if (ft_redir_file(curr_data, redirs, O_APPEND | O_WRONLY
-// 				| O_CREAT))
-// 				return (1);
-// 		}
-// 		else if (!(ft_strcmp(redirs->type, "<<")))
-// 			ft_heredoc(curr_data, redirs);
-// 		redirs = redirs->next;
-// 	}
-// 	return (0);
-// }
 
 int	ft_init_streams(t_ast *pipeline_seq)
 {
@@ -306,7 +245,7 @@ void	execute_line(t_ast *ast)
 {
 	t_ast		*curr_pipeline_seq;
 	t_ast		*curr_simple_cmd;
-	static	int	prev_err_num = 0;
+	static int	prev_err_num = 0;
 
 	curr_pipeline_seq = ast->node.dir.bottom;
 	while (curr_pipeline_seq)
@@ -317,7 +256,7 @@ void	execute_line(t_ast *ast)
 		if (ft_init_streams(curr_pipeline_seq))
 			break ;
 		curr_pipeline_seq->PIDS = malloc((curr_pipeline_seq->PIPES + 1)
-			* sizeof(int));
+				* sizeof(int));
 		curr_simple_cmd = curr_pipeline_seq->node.pipe.dir.bottom;
 		curr_simple_cmd->node.data.prev_errnum = prev_err_num;
 		ft_fork_processes(curr_simple_cmd, curr_pipeline_seq);

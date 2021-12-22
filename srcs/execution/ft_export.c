@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/03 11:02:38 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/22 16:04:17 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/22 20:40:49 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	swap_strings(char **s1, char **s2)
 {
-	char *tmp;
+	char	*tmp;
 
 	tmp = *s1;
 	*s1 = *s2;
@@ -87,40 +87,40 @@ int	is_arg_valid(char *arg)
 
 /*
 ** * append_to_env_value
-**
-** *********************************************
-** arg[valid_namelen] is the char '+'
-** arg[valid_namelen + 1] is the char '='
-** arg[valid_namelen + 2] is either '\0' or the
-** 		beginning of the value to be appended
-** *********************************************
+** *
+** * *********************************************
+** * arg[valid_namelen] is the char '+'
+** * arg[valid_namelen + 1] is the char '='
+** * arg[valid_namelen + 2] is either '\0' or the
+** * 		beginning of the value to be appended
+** * *********************************************
 */
 
 void	append_to_env_value(char *arg, int valid_namelen)
 {
-	int	i;
+	int		i;
 	char	*old_value;
 
 	i = 0;
 	while (i < g_vars.env_table.name.used_size)
 	{
 		if (!ft_strncmp(g_vars.env_table.name.elements[i], arg,
-			valid_namelen) && !g_vars.env_table.name.elements[i][valid_namelen])
+				valid_namelen)
+			&& !g_vars.env_table.name.elements[i][valid_namelen])
 		{
 			old_value = g_vars.env_table.value.elements[i];
 			if (!old_value)
 				old_value = "";
 			replace_element_at_index(&g_vars.env_table.value,
 				ft_strjoin(old_value,
-				// ft_strjoin(!g_vars.env_table.value.elements[i] ? "" :
-				// g_vars.env_table.value.elements[i],
-				&arg[valid_namelen + 2]), i);
-				return ;
+					&arg[valid_namelen + 2]), i);
+			return ;
 		}
 		i++;
 	}
 	add_new_element(&g_vars.env_table.name, ft_substr(arg, 0, valid_namelen));
-	add_new_element(&g_vars.env_table.value, ft_strdup(&arg[valid_namelen + 2]));
+	add_new_element(&g_vars.env_table.value,
+		ft_strdup(&arg[valid_namelen + 2]));
 }
 
 /*
@@ -135,14 +135,12 @@ void	add_valid_env_variable(char *arg, int valid_namelen)
 	while (i < g_vars.env_table.name.used_size)
 	{
 		if (!ft_strncmp(g_vars.env_table.name.elements[i], arg,
-			valid_namelen)&& !g_vars.env_table.name.elements[i][valid_namelen])
+				valid_namelen)
+			&& !g_vars.env_table.name.elements[i][valid_namelen])
 		{
 			if (arg[valid_namelen] == '=')
-			{
-				// free(g_vars.env_table.value.elements[i]);
 				replace_element_at_index(&g_vars.env_table.value,
 					ft_strdup(&arg[valid_namelen + 1]), i);
-			}
 			return ;
 		}
 		i++;
@@ -150,15 +148,10 @@ void	add_valid_env_variable(char *arg, int valid_namelen)
 	add_new_element(&g_vars.env_table.name,
 		ft_substr(arg, 0, valid_namelen));
 	if (arg[valid_namelen] == '=')
-		// add_new_element(&g_vars.env_table.value, ft_substr(arg,
-		// 	valid_namelen + 1, ft_strlen(arg) - valid_namelen));
 		add_new_element(&g_vars.env_table.value,
-		ft_strdup(&arg[valid_namelen + 1]));
+			ft_strdup(&arg[valid_namelen + 1]));
 	else
-	{
 		add_new_element(&g_vars.env_table.value, NULL);
-		printf("null value added\n");
-	}
 }
 
 void	update_env(t_ast *data)
@@ -186,9 +179,9 @@ void	copy_env(char ***env_names, char ***env_values)
 	int	i;
 
 	*env_names = malloc(sizeof(char *)
-			* g_vars.env_table.name.used_size + 1);
+			* (g_vars.env_table.name.used_size + 1));
 	*env_values = malloc(sizeof(char *)
-			* g_vars.env_table.value.used_size + 1);
+			* (g_vars.env_table.value.used_size + 1));
 	i = 0;
 	while (i < g_vars.env_table.name.used_size)
 	{
@@ -196,11 +189,13 @@ void	copy_env(char ***env_names, char ***env_values)
 		(*env_values)[i] = g_vars.env_table.value.elements[i];
 		i++;
 	}
+	(*env_names)[i] = g_vars.env_table.name.elements[i];
+	(*env_values)[i] = g_vars.env_table.name.elements[i];
 }
 
 void	print_env(void)
 {
-	int	i;
+	int		i;
 	char	**env_names;
 	char	**env_values;
 
@@ -211,7 +206,7 @@ void	print_env(void)
 	{
 		if (!env_values[i])
 			printf("declare -x %s\n", env_names[i]);
-		else if (env_names[i]
+		else if (env_names[i] && env_values[i]
 			&& ft_strcmp(env_names[i], "_"))
 			printf("declare -x %s=\"%s\"\n", env_names[i], env_values[i]);
 		i++;
@@ -220,10 +215,8 @@ void	print_env(void)
 	free(env_values);
 }
 
-
 void	ft_export(t_ast *data)
 {
-
 	if (!data->ARGV[1])
 		print_env();
 	else

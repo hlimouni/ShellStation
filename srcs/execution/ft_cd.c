@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 16:09:29 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/21 14:28:02 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/22 19:47:23 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	add_env_variable(char *name, char *value)
 {
 	int	index;
-	
+
 	index = get_index_of_env_name(g_vars.env_table, name);
 	if (index < 0)
 	{
@@ -44,9 +44,9 @@ static int	change_dir(char *path)
 	return (1);
 }
 
-static char *get_path_perror(char *env_name)
+static char	*get_path_perror(char *env_name)
 {
-	char *path;
+	char	*path;
 
 	path = get_value_of_env_name(g_vars.env_table, env_name);
 	if (!path)
@@ -77,42 +77,11 @@ static char	*get_path_from_arg(char *arg)
 	return (path);
 }
 
-// static char	*get_path_from_arg(char *arg)
-// {
-// 	char	*path;
-
-// 	if (!arg || !ft_strcmp(arg, "--") || !ft_strcmp(arg, "~"))
-// 	{
-// 		path = get_value_of_env_name(g_vars.env_table, "HOME");
-// 		if (!path)
-// 			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
-// 	}
-// 	else if (!ft_strncmp(arg, "~/", 2))
-// 	{
-// 		path = get_value_of_env_name(g_vars.env_table, "HOME");
-// 		if (!path)
-// 		{
-// 			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
-// 			return (path);
-// 		}
-// 		return (ft_strjoin(path, &arg[1]));
-// 	}
-// 	else if (!ft_strcmp(arg, "-"))
-// 	{
-// 		path = get_value_of_env_name(g_vars.env_table, "OLDPWD");
-// 		if (!path)
-// 			ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2);
-// 	}
-// 	else
-// 		path = arg;
-// 	return (path);
-// }
-
 void	ft_cd(t_ast *data)
 {
-	char *path;
+	char	*path;
 	char	cwd[PATH_MAX];
-	int	ret;
+	int		ret;
 
 	path = get_path_from_arg(data->ARGV[1]);
 	if (!path)

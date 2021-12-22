@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/03 11:02:38 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/21 15:41:41 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/22 16:04:17 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ void	append_to_env_value(char *arg, int valid_namelen)
 	while (i < g_vars.env_table.name.used_size)
 	{
 		if (!ft_strncmp(g_vars.env_table.name.elements[i], arg,
-			valid_namelen))
+			valid_namelen) && !g_vars.env_table.name.elements[i][valid_namelen])
 		{
 			old_value = g_vars.env_table.value.elements[i];
 			if (!old_value)
@@ -135,7 +135,7 @@ void	add_valid_env_variable(char *arg, int valid_namelen)
 	while (i < g_vars.env_table.name.used_size)
 	{
 		if (!ft_strncmp(g_vars.env_table.name.elements[i], arg,
-			valid_namelen))
+			valid_namelen)&& !g_vars.env_table.name.elements[i][valid_namelen])
 		{
 			if (arg[valid_namelen] == '=')
 			{

@@ -6,11 +6,11 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 14:31:43 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/23 15:33:45 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/23 19:55:04 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "file.h"
+#include "execution.h"
 
 char	*ft_strjoin3(const char *s1, const char *s2, const char *s3)
 {
@@ -174,27 +174,14 @@ void	cmd_traverse(t_data *data, char **envp)
 		ft_traverse_binaries(data, envp);
 }
 
-// void	cmd_traverse(t_ast *data, char **envp)
-// {
-// 	if (data->argv[0][0] == '/' || !ft_strncmp(data->argv[0], "./", 2))
-// 	{
-// 		execve(data->argv[0], data->argv, envp);
-// 		ft_error(data->argv[0], "No such file or directory");
-// 	}
-// 	else
-// 		ft_traverse_binaries(data, envp);
-// }
-
 void	ft_exec(t_data *data)
 {
 	char	**envp;
 
-	if (!ft_isbuiltin(data->argv[0])
-		|| data->pipes
+	if (!ft_isbuiltin(data->argv[0]) || data->pipes
 		|| data->redirs)
 	{
-		if (dup2(*data->in_fd, 0) == -1
-			|| dup2(*data->out_fd, 1) == -1)
+		if (dup2(*data->in_fd, 0) == -1 || dup2(*data->out_fd, 1) == -1)
 		{
 			perror("minishell");
 			exit(1);
@@ -213,35 +200,6 @@ void	ft_exec(t_data *data)
 		exit(127);
 	}
 }
-
-// void	ft_exec(t_ast *data, t_ast *pipeline_seq)
-// {
-// 	char	**envp;
-
-// 	if (!ft_isbuiltin(data->argv[0])
-// 		|| pipeline_seq->node.pipe.pipes_count
-// 		|| pipeline_seq->node.data.redirections)
-// 	{
-// 		if (dup2(data->node.data.in_fd, 0) == -1
-// 			|| dup2(data->node.data.out_fd, 1) == -1)
-// 		{
-// 			perror("minishell");
-// 			exit(1);
-// 		}
-// 		ft_close_descriptors(pipeline_seq);
-// 		data->node.data.out_fd = 1;
-// 	}
-// 	envp = get_env_array();
-// 	cmd_traverse(data, envp);
-// 	free_2d_array(&envp);
-// 	if (pipeline_seq->node.pipe.pipes_count
-// 		|| !ft_isbuiltin(data->argv[0]))
-// 	{
-// 		if (ft_isbuiltin(data->argv[0]))
-// 			exit(g_vars.last_err_num);
-// 		exit(127);
-// 	}
-// }
 
 int	ft_isbuiltin(char *builtin)
 {

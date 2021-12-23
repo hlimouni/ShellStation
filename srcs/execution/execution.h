@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   file.h                                             :+:      :+:    :+:   */
+/*   execution.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 21:42:28 by iariss            #+#    #+#             */
-/*   Updated: 2021/12/23 15:32:32 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/23 19:44:23 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FILE_H
-# define FILE_H
+#ifndef EXECUTION_H
+# define EXECUTION_H
 
 # include "../libft/libft.h"
 # include <stdio.h>
@@ -42,15 +42,16 @@ enum	e_builtins
 	__env,
 	__exit	
 };
-
+/*
 # define ARGC node.data.args_vec.used_size
 # define ARGV node.data.args_vec.elements
 # define PIPES node.pipe.pipes_count
 # define PIDS node.pipe.pids
 # define OUT_FD node.data.out_fd
 # define IN_FD node.data.in_fd
+*/
 
-typedef struct	s_data
+typedef struct s_data
 {
 	t_ast			*pip_seq;
 	int				argc;
@@ -75,10 +76,6 @@ void	ft_env(void);
 void	free_2d_array(char ***arr);
 int		ft_isbuiltin(char *builtin);
 void	ft_close_descriptors(t_ast *pipeline_seq);
-
-/***********************************************************/												
-/***********************************************************/												
-
 int		ft_strcmp(const char *s1, const char *s2);
 
 #endif

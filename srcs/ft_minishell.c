@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/20 00:34:20 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/23 15:45:34 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/23 19:39:25 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,9 +119,7 @@ void	ft_heredoc(t_ast *data, t_redirection *redirs)
 	int	fd[2];
 
 	pipe(fd);
-	// if (!redirs->next
-	// 	|| (redirs->next && !access(redirs->next->file, R_OK | W_OK)))
-		write(fd[1], redirs->file, ft_strlen(redirs->file));
+	write(fd[1], redirs->file, ft_strlen(redirs->file));
 	close(fd[1]);
 	data->node.data.in_fd = fd[0];
 }
@@ -260,34 +258,6 @@ void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
 		wait_for_children(pipeline_seq);
 	}
 }
-
-// void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
-// {
-// 	t_ast	*curr_data;
-// 	int		i;
-
-// 	curr_data = curr_simple_cmd->node.dir.bottom;
-// 	curr_data->node.data.prev_errnum = curr_simple_cmd->node.data.prev_errnum;
-// 	if (!pipeline_seq->node.pipe.pipes_count
-// 		&& ft_isbuiltin(curr_data->node.data.args_vec.elements[0]))
-// 		ft_exec(curr_data, pipeline_seq);
-// 	else
-// 	{
-// 		i = 0;
-// 		while (curr_simple_cmd)
-// 		{
-// 			pipeline_seq->node.pipe.pids[i] = fork();
-// 			if (pipeline_seq->node.pipe.pids[i] == 0)
-// 			{
-// 				child_signals();
-// 				ft_exec(curr_simple_cmd->node.dir.bottom, pipeline_seq);
-// 			}
-// 			i++;
-// 			curr_simple_cmd = curr_simple_cmd->node.dir.next;
-// 		}
-// 		wait_for_children(pipeline_seq);
-// 	}
-// }
 
 void	execute_line(t_ast *ast)
 {

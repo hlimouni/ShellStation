@@ -7,7 +7,7 @@ CC := gcc
 CFLAGS := -Wall -Wextra -Werror
 
 HDRS := srcs/environment/environment.h \
-srcs/execution/file.h \
+srcs/execution/execution.h \
 srcs/freeing_time/freeing_time.h \
 srcs/get_next_line/get_next_line.h \
 srcs/minishell.h \

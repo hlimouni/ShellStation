@@ -6,19 +6,19 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/12 17:22:02 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/23 14:56:07 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/23 20:02:11 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "file.h"
+#include "execution.h"
 
-int		ft_isspace(int c)
+int	ft_isspace(int c)
 {
-	return ((c == '\n' || c == '\t' || c == ' ' ||
-				c == '\v' || c == '\f' || c == '\r'));
+	return ((c == '\n' || c == '\t' || c == ' '
+			|| c == '\v' || c == '\f' || c == '\r'));
 }
 
-int		is_strint(char *str)
+int	is_strint(char *str)
 {
 	size_t	i;
 
@@ -28,12 +28,12 @@ int		is_strint(char *str)
 	if ((str[i] == '-' || str[i] == '+') && ft_strlen(str) > 1)
 		i++;
 	while (ft_isdigit(str[i++]))
-	if (ft_strlen(str) == i)
-		return (i);
+		if (ft_strlen(str) == i)
+			return (i);
 	return (0);
 }
 
-int			ft_getstr_sign(char *str, int *index)
+int	ft_getstr_sign(char *str, int *index)
 {
 	int		sign;
 
@@ -51,7 +51,7 @@ int			ft_getstr_sign(char *str, int *index)
 	return (sign);
 }
 
-int			ft_strtod(char *str, long *num)
+int	ft_strtod(char *str, long *num)
 {
 	int		i;
 	int		sn;
@@ -80,7 +80,6 @@ void	numeric_arg_error(char *arg)
 	ft_putstr_fd("exit\nminishell: exit: ", 2);
 	ft_putstr_fd(arg, 2);
 	ft_putstr_fd(": numeric argument required\n", 2);
-	
 }
 
 void	ft_exit(t_data *data)

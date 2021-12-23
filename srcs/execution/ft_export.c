@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/03 11:02:38 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/22 20:40:49 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/23 14:51:42 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,21 +154,21 @@ void	add_valid_env_variable(char *arg, int valid_namelen)
 		add_new_element(&g_vars.env_table.value, NULL);
 }
 
-void	update_env(t_ast *data)
+void	update_env(t_data *data)
 {
 	int	j;
 	int	valid_namelen;
 
 	j = 1;
-	while (j < data->ARGC)
+	while (j < data->argc)
 	{
-		valid_namelen = is_arg_valid(data->ARGV[j]);
+		valid_namelen = is_arg_valid(data->argv[j]);
 		if (valid_namelen)
 		{
-			if (!ft_strncmp(&data->ARGV[j][valid_namelen], "+=", 2))
-				append_to_env_value(data->ARGV[j], valid_namelen);
+			if (!ft_strncmp(&data->argv[j][valid_namelen], "+=", 2))
+				append_to_env_value(data->argv[j], valid_namelen);
 			else
-				add_valid_env_variable(data->ARGV[j], valid_namelen);
+				add_valid_env_variable(data->argv[j], valid_namelen);
 		}
 		j++;
 	}
@@ -215,9 +215,9 @@ void	print_env(void)
 	free(env_values);
 }
 
-void	ft_export(t_ast *data)
+void	ft_export(t_data *data)
 {
-	if (!data->ARGV[1])
+	if (!data->argv[1])
 		print_env();
 	else
 		update_env(data);

@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 14:31:43 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/22 19:43:29 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/23 15:33:45 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,11 @@ int	ft_convert_builtin(char *builtin)
 	return (0);
 }
 
-int	ft_execbuiltin(t_ast *data)
+int	ft_execbuiltin(t_data *data)
 {
 	int	ret;
 
-	ret = ft_convert_builtin(data->ARGV[0]);
+	ret = ft_convert_builtin(data->argv[0]);
 	if (ret == __echo)
 		ft_echo(data);
 	else if (ret == __cd)
@@ -89,10 +89,10 @@ void	ft_close_descriptors(t_ast *pipeline_seq)
 	while (curr_smpl_cmd)
 	{
 		curr_data = curr_smpl_cmd->node.dir.bottom;
-		if (curr_data->IN_FD != 0)
-			close(curr_data->IN_FD);
-		if (curr_data->OUT_FD != 1)
-			close (curr_data->OUT_FD);
+		if (curr_data->node.data.in_fd != 0)
+			close(curr_data->node.data.in_fd);
+		if (curr_data->node.data.out_fd != 1)
+			close (curr_data->node.data.out_fd);
 		curr_smpl_cmd = curr_smpl_cmd->node.dir.next;
 	}
 }
@@ -111,7 +111,7 @@ char	*get_env_value(char *name)
 	return (NULL);
 }
 
-static void	ft_traverse_binaries(t_ast *data, char **envp)
+static void	ft_traverse_binaries(t_data *data, char **envp)
 {
 	int		i;
 	char	*newpath;
@@ -119,23 +119,23 @@ static void	ft_traverse_binaries(t_ast *data, char **envp)
 
 	if (ft_execbuiltin(data) == -1)
 	{
-		execve(data->ARGV[0], data->ARGV, envp);
+		execve(data->argv[0], data->argv, envp);
 		if (get_env_value("PATH"))
 		{
 			paths = ft_split(get_env_value("PATH"), ':');
 			i = 0;
 			while (paths[i])
 			{
-				newpath = ft_strjoin3(paths[i], "/", data->ARGV[0]);
-				execve(newpath, data->ARGV, envp);
+				newpath = ft_strjoin3(paths[i], "/", data->argv[0]);
+				execve(newpath, data->argv, envp);
 				free(newpath);
 				i++;
 			}
 			free_2d_array(&paths);
-			ft_error(data->ARGV[0], "command not found");
+			ft_error(data->argv[0], "command not found");
 		}
 		else
-			ft_error(data->ARGV[0], "No such file or directory");
+			ft_error(data->argv[0], "No such file or directory");
 	}
 }
 
@@ -163,42 +163,85 @@ char	**get_env_array(void)
 	return (env_array);
 }
 
-void	cmd_traverse(t_ast *data, char **envp)
+void	cmd_traverse(t_data *data, char **envp)
 {
-	if (data->ARGV[0][0] == '/' || !ft_strncmp(data->ARGV[0], "./", 2))
+	if (data->argv[0][0] == '/' || !ft_strncmp(data->argv[0], "./", 2))
 	{
-		execve(data->ARGV[0], data->ARGV, envp);
-		ft_error(data->ARGV[0], "No such file or directory");
+		execve(data->argv[0], data->argv, envp);
+		ft_error(data->argv[0], "No such file or directory");
 	}
 	else
 		ft_traverse_binaries(data, envp);
 }
 
-void	ft_exec(t_ast *data, t_ast *pipeline_seq)
+// void	cmd_traverse(t_ast *data, char **envp)
+// {
+// 	if (data->argv[0][0] == '/' || !ft_strncmp(data->argv[0], "./", 2))
+// 	{
+// 		execve(data->argv[0], data->argv, envp);
+// 		ft_error(data->argv[0], "No such file or directory");
+// 	}
+// 	else
+// 		ft_traverse_binaries(data, envp);
+// }
+
+void	ft_exec(t_data *data)
 {
 	char	**envp;
 
-	if (!ft_isbuiltin(data->ARGV[0]) || pipeline_seq->PIPES
-		|| pipeline_seq->node.data.redirections)
+	if (!ft_isbuiltin(data->argv[0])
+		|| data->pipes
+		|| data->redirs)
 	{
-		if (dup2(data->IN_FD, 0) == -1 || dup2(data->OUT_FD, 1) == -1)
+		if (dup2(*data->in_fd, 0) == -1
+			|| dup2(*data->out_fd, 1) == -1)
 		{
 			perror("minishell");
 			exit(1);
 		}
-		ft_close_descriptors(pipeline_seq);
-			data->OUT_FD = 1;
+		ft_close_descriptors(data->pip_seq);
+		data->curr_data->node.data.out_fd = 1;
 	}
 	envp = get_env_array();
 	cmd_traverse(data, envp);
 	free_2d_array(&envp);
-	if (pipeline_seq->PIPES || !ft_isbuiltin(data->ARGV[0]))
+	if (data->pipes
+		|| !ft_isbuiltin(data->argv[0]))
 	{
-		if (ft_isbuiltin(data->ARGV[0]))
+		if (ft_isbuiltin(data->argv[0]))
 			exit(g_vars.last_err_num);
 		exit(127);
 	}
 }
+
+// void	ft_exec(t_ast *data, t_ast *pipeline_seq)
+// {
+// 	char	**envp;
+
+// 	if (!ft_isbuiltin(data->argv[0])
+// 		|| pipeline_seq->node.pipe.pipes_count
+// 		|| pipeline_seq->node.data.redirections)
+// 	{
+// 		if (dup2(data->node.data.in_fd, 0) == -1
+// 			|| dup2(data->node.data.out_fd, 1) == -1)
+// 		{
+// 			perror("minishell");
+// 			exit(1);
+// 		}
+// 		ft_close_descriptors(pipeline_seq);
+// 		data->node.data.out_fd = 1;
+// 	}
+// 	envp = get_env_array();
+// 	cmd_traverse(data, envp);
+// 	free_2d_array(&envp);
+// 	if (pipeline_seq->node.pipe.pipes_count
+// 		|| !ft_isbuiltin(data->argv[0]))
+// 	{
+// 		if (ft_isbuiltin(data->argv[0]))
+// 			exit(g_vars.last_err_num);
+// 		exit(127);
+// 	}
+// }
 
 int	ft_isbuiltin(char *builtin)
 {

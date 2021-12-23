@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/20 00:34:20 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/22 19:40:37 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/23 15:45:34 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ t_ast	*ft_find_command(int pid, t_ast *pipeline_seq)
 	i = 0;
 	while (curr_smpl_cmd)
 	{
-		if (pipeline_seq->PIDS[i] == pid)
+		if (pipeline_seq->node.pipe.pids[i] == pid)
 			return (curr_smpl_cmd->node.dir.bottom);
 		i++;
 		curr_smpl_cmd = curr_smpl_cmd->node.dir.next;
@@ -68,7 +68,8 @@ static void	ft_update_status(int terminated_pid, int status,
 {
 	t_ast	*curr_data;
 
-	if (terminated_pid == pipeline_seq->PIDS[pipeline_seq->PIPES])
+	if (terminated_pid == pipeline_seq
+		->node.pipe.pids[pipeline_seq->node.pipe.pipes_count])
 	{
 		if (!WTERMSIG(status))
 			g_vars.last_err_num = WEXITSTATUS(status);
@@ -78,10 +79,10 @@ static void	ft_update_status(int terminated_pid, int status,
 	curr_data = ft_find_command(terminated_pid, pipeline_seq);
 	if (curr_data)
 	{
-		if (curr_data->OUT_FD != 1)
-			close(curr_data->OUT_FD);
-		if (curr_data->IN_FD != 0)
-			close(curr_data->IN_FD);
+		if (curr_data->node.data.out_fd != 1)
+			close(curr_data->node.data.out_fd);
+		if (curr_data->node.data.in_fd != 0)
+			close(curr_data->node.data.in_fd);
 	}
 }
 
@@ -91,7 +92,7 @@ static void	wait_for_children(t_ast *pipeline_seq)
 	int		status;
 
 	i = 0;
-	while (i <= pipeline_seq->PIPES)
+	while (i <= pipeline_seq->node.pipe.pipes_count)
 	{
 		ft_update_status(wait(&status), status, pipeline_seq);
 		i++;
@@ -103,14 +104,14 @@ void	ft_init_pipe(t_ast *curr_data, t_ast *prev_data)
 	int	fd[2];
 
 	pipe(fd);
-	if (prev_data->OUT_FD != 1)
+	if (prev_data->node.data.out_fd != 1)
 		close(fd[1]);
 	else
-		prev_data->OUT_FD = fd[1];
-	if (curr_data->IN_FD != 0)
+		prev_data->node.data.out_fd = fd[1];
+	if (curr_data->node.data.in_fd != 0)
 		close(fd[0]);
 	else
-		curr_data->IN_FD = fd[0];
+		curr_data->node.data.in_fd = fd[0];
 }
 
 void	ft_heredoc(t_ast *data, t_redirection *redirs)
@@ -118,11 +119,11 @@ void	ft_heredoc(t_ast *data, t_redirection *redirs)
 	int	fd[2];
 
 	pipe(fd);
-	if (!redirs->next
-		|| (redirs->next && !access(redirs->next->file, R_OK | W_OK)))
+	// if (!redirs->next
+	// 	|| (redirs->next && !access(redirs->next->file, R_OK | W_OK)))
 		write(fd[1], redirs->file, ft_strlen(redirs->file));
 	close(fd[1]);
-	data->IN_FD = fd[0];
+	data->node.data.in_fd = fd[0];
 }
 
 int	ft_redir_file(t_ast *data, t_redirection *redirs, int open_flag)
@@ -131,10 +132,10 @@ int	ft_redir_file(t_ast *data, t_redirection *redirs, int open_flag)
 	char	dir;
 
 	dir = *(redirs->type);
-	if (dir == '>' && data->OUT_FD != 1)
-		close(data->OUT_FD);
-	if (dir == '<' && data->IN_FD != 0)
-		close(data->IN_FD);
+	if (dir == '>' && data->node.data.out_fd != 1)
+		close(data->node.data.out_fd);
+	if (dir == '<' && data->node.data.in_fd != 0)
+		close(data->node.data.in_fd);
 	fd = open(redirs->file, open_flag, 0644);
 	if (fd == -1)
 	{
@@ -143,9 +144,9 @@ int	ft_redir_file(t_ast *data, t_redirection *redirs, int open_flag)
 		return (1);
 	}
 	if (dir == '>')
-		data->OUT_FD = fd;
+		data->node.data.out_fd = fd;
 	if (dir == '<')
-		data->IN_FD = fd;
+		data->node.data.in_fd = fd;
 	return (0);
 }
 
@@ -202,8 +203,8 @@ int	ft_init_streams(t_ast *pipeline_seq)
 	{
 		expand_curr_cmd(curr_smpl_cmd);
 		curr_data = curr_smpl_cmd->node.dir.bottom;
-		curr_data->IN_FD = 0;
-		curr_data->OUT_FD = 1;
+		curr_data->node.data.in_fd = 0;
+		curr_data->node.data.out_fd = 1;
 		if (handle_redirections(curr_data))
 			return (1);
 		if (prev_data)
@@ -214,25 +215,44 @@ int	ft_init_streams(t_ast *pipeline_seq)
 	return (0);
 }
 
-void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
+t_data	get_data(t_ast *smpl_cmd, t_ast *pipseq)
 {
 	t_ast	*curr_data;
+	t_data	data;
+
+	curr_data = smpl_cmd->node.dir.bottom;
+	data.prev = smpl_cmd->node.data.prev_errnum;
+	data.argv = curr_data->node.data.args_vec.elements;
+	data.argc = curr_data->node.data.args_vec.used_size;
+	data.pipes = pipseq->node.pipe.pipes_count;
+	data.pids = pipseq->node.pipe.pids;
+	data.out_fd = &curr_data->node.data.out_fd;
+	data.in_fd = &curr_data->node.data.in_fd;
+	data.redirs = pipseq->node.data.redirections;
+	data.curr_data = curr_data;
+	data.pip_seq = pipseq;
+	return (data);
+}
+
+void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
+{
+	t_data	data;
 	int		i;
 
-	curr_data = curr_simple_cmd->node.dir.bottom;
-	curr_data->node.data.prev_errnum = curr_simple_cmd->node.data.prev_errnum;
-	if (!pipeline_seq->PIPES && ft_isbuiltin(curr_data->ARGV[0]))
-		ft_exec(curr_data, pipeline_seq);
+	data = get_data(curr_simple_cmd, pipeline_seq);
+	if (!data.pipes && ft_isbuiltin(data.argv[0]))
+		ft_exec(&data);
 	else
 	{
 		i = 0;
 		while (curr_simple_cmd)
 		{
-			pipeline_seq->PIDS[i] = fork();
-			if (pipeline_seq->PIDS[i] == 0)
+			data = get_data(curr_simple_cmd, pipeline_seq);
+			data.pids[i] = fork();
+			if (data.pids[i] == 0)
 			{
 				child_signals();
-				ft_exec(curr_simple_cmd->node.dir.bottom, pipeline_seq);
+				ft_exec(&data);
 			}
 			i++;
 			curr_simple_cmd = curr_simple_cmd->node.dir.next;
@@ -240,6 +260,34 @@ void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
 		wait_for_children(pipeline_seq);
 	}
 }
+
+// void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
+// {
+// 	t_ast	*curr_data;
+// 	int		i;
+
+// 	curr_data = curr_simple_cmd->node.dir.bottom;
+// 	curr_data->node.data.prev_errnum = curr_simple_cmd->node.data.prev_errnum;
+// 	if (!pipeline_seq->node.pipe.pipes_count
+// 		&& ft_isbuiltin(curr_data->node.data.args_vec.elements[0]))
+// 		ft_exec(curr_data, pipeline_seq);
+// 	else
+// 	{
+// 		i = 0;
+// 		while (curr_simple_cmd)
+// 		{
+// 			pipeline_seq->node.pipe.pids[i] = fork();
+// 			if (pipeline_seq->node.pipe.pids[i] == 0)
+// 			{
+// 				child_signals();
+// 				ft_exec(curr_simple_cmd->node.dir.bottom, pipeline_seq);
+// 			}
+// 			i++;
+// 			curr_simple_cmd = curr_simple_cmd->node.dir.next;
+// 		}
+// 		wait_for_children(pipeline_seq);
+// 	}
+// }
 
 void	execute_line(t_ast *ast)
 {
@@ -255,12 +303,12 @@ void	execute_line(t_ast *ast)
 		curr_pipeline_seq->node.pipe.og_out = dup(1);
 		if (ft_init_streams(curr_pipeline_seq))
 			break ;
-		curr_pipeline_seq->PIDS = malloc((curr_pipeline_seq->PIPES + 1)
-				* sizeof(int));
+		curr_pipeline_seq->node.pipe.pids = malloc(
+				(curr_pipeline_seq->node.pipe.pipes_count + 1) * sizeof(int));
 		curr_simple_cmd = curr_pipeline_seq->node.pipe.dir.bottom;
 		curr_simple_cmd->node.data.prev_errnum = prev_err_num;
 		ft_fork_processes(curr_simple_cmd, curr_pipeline_seq);
-		free(curr_pipeline_seq->PIDS);
+		free(curr_pipeline_seq->node.pipe.pids);
 		dup2(curr_pipeline_seq->node.pipe.og_in, 0);
 		dup2(curr_pipeline_seq->node.pipe.og_out, 1);
 		curr_pipeline_seq = curr_pipeline_seq->node.pipe.dir.next;

@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/12 17:22:02 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/22 20:40:45 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/23 14:56:07 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,18 +83,18 @@ void	numeric_arg_error(char *arg)
 	
 }
 
-void	ft_exit(t_ast *data)
+void	ft_exit(t_data *data)
 {
 	long	num;
 
-	if (data->ARGC > 1)
+	if (data->argc > 1)
 	{
-		if (!is_strint(data->ARGV[1]) || ft_strtod(data->ARGV[1], &num))
+		if (!is_strint(data->argv[1]) || ft_strtod(data->argv[1], &num))
 		{
-			numeric_arg_error(data->ARGV[1]);
+			numeric_arg_error(data->argv[1]);
 			exit(255);
 		}
-		else if (data->ARGC > 2)
+		else if (data->argc > 2)
 		{
 			ft_putstr_fd("exit\nminishell: exit: too many arguments\n", 2);
 			g_vars.last_err_num = 1;
@@ -103,7 +103,7 @@ void	ft_exit(t_ast *data)
 	}
 	ft_putstr_fd("exit\n", 1);
 	overwrite_history_file(&g_vars.rdl_vars);
-	if (data->ARGV[1])
-		exit(ft_atoi(data->ARGV[1]));
-	exit(data->node.data.prev_errnum);
+	if (data->argv[1])
+		exit(ft_atoi(data->argv[1]));
+	exit(data->prev);
 }

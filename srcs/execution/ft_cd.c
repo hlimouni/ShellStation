@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 16:09:29 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/22 19:47:23 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/23 14:49:52 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,20 +77,21 @@ static char	*get_path_from_arg(char *arg)
 	return (path);
 }
 
-void	ft_cd(t_ast *data)
+void	ft_cd(t_data *data)
 {
 	char	*path;
 	char	cwd[PATH_MAX];
 	int		ret;
 
-	path = get_path_from_arg(data->ARGV[1]);
+	path = get_path_from_arg(data->argv[1]);
 	if (!path)
 	{
 		g_vars.last_err_num = 1;
 		return ;
 	}
 	ret = change_dir(path);
-	if (data->ARGV[1] && !ft_strncmp(data->ARGV[1], "~/", 2))
+	if (data->argv[1]
+		&& !ft_strncmp(data->argv[1], "~/", 2))
 		free(path);
 	if (ret == 0)
 	{
@@ -99,6 +100,7 @@ void	ft_cd(t_ast *data)
 		g_vars.last_err_num = 1;
 		return ;
 	}
-	if (data->ARGV[1] && !ft_strcmp(data->ARGV[1], "-"))
+	if (data->argv[1]
+		&& !ft_strcmp(data->argv[1], "-"))
 		printf("%s\n", getcwd(cwd, PATH_MAX));
 }

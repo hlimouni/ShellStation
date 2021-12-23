@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 15:50:57 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/22 20:40:53 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/23 14:53:49 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,20 +49,20 @@ static int	is_argvalid(char *arg)
 	return (namelen);
 }
 
-void	ft_unset(t_ast *data)
+void	ft_unset(t_data *data)
 {
 	int	j_args;
 	int	j_env;
 
 	j_args = 1;
-	while (j_args < data->ARGC)
+	while (j_args < data->argc)
 	{
-		if (is_argvalid(data->ARGV[j_args]))
+		if (is_argvalid(data->argv[j_args]))
 		{
 			j_env = 0;
 			while (j_env < g_vars.env_table.name.used_size)
 			{
-				if (!ft_strcmp(data->ARGV[j_args],
+				if (!ft_strcmp(data->argv[j_args],
 						g_vars.env_table.name.elements[j_env]))
 				{
 					delete_element_at_index(&g_vars.env_table.name, j_env);

@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 14:31:43 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/24 12:56:47 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/24 17:38:33 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ void	ft_exec(t_data *data)
 	char	**envp;
 
 	if (!ft_isbuiltin(data->argv[0]) || data->pipes
-		|| data->redirs)
+		|| data->curr_data->node.data.redirections)
 	{
 		if (dup2(*data->in_fd, 0) == -1 || dup2(*data->out_fd, 1) == -1)
 		{
@@ -105,13 +105,11 @@ void	ft_exec(t_data *data)
 			exit(1);
 		}
 		ft_close_descriptors(data->pip_seq);
-		data->curr_data->node.data.out_fd = 1;
 	}
 	envp = get_env_array();
 	cmd_traverse(data, envp);
 	free_2d_array(&envp);
-	if (data->pipes
-		|| !ft_isbuiltin(data->argv[0]))
+	if (data->pipes || !ft_isbuiltin(data->argv[0]))
 	{
 		if (ft_isbuiltin(data->argv[0]))
 			exit(g_vars.last_err_num);

@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 19:37:34 by iltafah           #+#    #+#             */
-/*   Updated: 2021/12/24 14:56:32 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/24 14:59:09 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ typedef struct s_pipe_content
 ** * args_vec: the vector which holds the arguments of the command.
 ** * prev_errnum: holds the previous command error number.
 ** * in_fd: holds the fd of the input stream of the command.
-** * out_fd: holds the fd of the output stream of the command. 
+** * out_fd: holds the fd of the output stream of the command.
 */
 
 typedef struct s_data_content

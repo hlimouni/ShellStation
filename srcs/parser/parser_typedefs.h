@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 19:37:34 by iltafah           #+#    #+#             */
-/*   Updated: 2021/12/24 14:00:24 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/24 14:56:32 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,16 @@ typedef struct s_dir
 	struct s_ast	*bottom;
 }	t_dir;
 
+/*
+** * t_pipe_content holds data of the cureent pipeline *
+**		sequence defined as:
+**
+** * pipes_count: the number of pipes in the pipline_seq
+** * pids: the array which holds the pids of every forked process
+** * og_in: dupped fd of the original standard input stream
+** * out_fd: dupped fd of the original standard output stream 
+*/
+
 typedef struct s_pipe_content
 {
 	int				pipes_count;
@@ -70,6 +80,16 @@ typedef struct s_pipe_content
 	int				og_out;
 	t_dir			dir;
 }	t_pipe_content;
+
+/*
+** * the structure t_data_contents holds data of the *
+** 		current simple command defined as:
+**
+** * args_vec: the vector which holds the arguments of the command.
+** * prev_errnum: holds the previous command error number.
+** * in_fd: holds the fd of the input stream of the command.
+** * out_fd: holds the fd of the output stream of the command. 
+*/
 
 typedef struct s_data_content
 {

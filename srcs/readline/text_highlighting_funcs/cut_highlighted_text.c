@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cut_highlighted_text.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iltafah <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 19:48:40 by iltafah           #+#    #+#             */
-/*   Updated: 2021/06/13 19:48:41 by iltafah          ###   ########.fr       */
+/*   Updated: 2021/12/24 14:00:42 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void	delete_hilitd_chars_from_history_line(t_rdline *rdl_vars)
 	while (chars_len_to_be_deleted)
 	{
 		hstry_line[line_i].delete_element_at_index(&hstry_line[line_i],
-		rdl_vars->beg_hilitd_index);
+			rdl_vars->beg_hilitd_index);
 		chars_len_to_be_deleted--;
 	}
 }

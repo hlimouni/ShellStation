@@ -6,13 +6,13 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/16 16:09:29 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/23 19:50:08 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/24 12:11:47 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "execution.h"
+#include "../execution.h"
 
-void	add_env_variable(char *name, char *value)
+static void	add_env_variable(char *name, char *value)
 {
 	int	index;
 

@@ -1,31 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   convert_int_to_str.c                               :+:      :+:    :+:   */
+/*   init_pipe.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/13 19:29:41 by iltafah           #+#    #+#             */
-/*   Updated: 2021/12/24 13:56:37 by hlimouni         ###   ########.fr       */
+/*   Created: 2021/12/24 12:49:33 by hlimouni          #+#    #+#             */
+/*   Updated: 2021/12/24 12:49:55 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./libft.h"
+#include "execution.h"
 
-char	*convert_int_to_str(int num)
+void	init_pipe(t_ast *curr_data, t_ast *prev_data)
 {
-	char	*str;
-	int		digits;
-	int		len;
+	int	fd[2];
 
-	digits = count_digits(num);
-	len = digits + 1;
-	str = malloc(sizeof(char) * len);
-	str[digits] = '\0';
-	while (digits-- > 0)
-	{
-		str[digits] = (num % 10) + '0';
-		num /= 10;
-	}
-	return (str);
+	pipe(fd);
+	if (prev_data->node.data.out_fd != 1)
+		close(fd[1]);
+	else
+		prev_data->node.data.out_fd = fd[1];
+	if (curr_data->node.data.in_fd != 0)
+		close(fd[0]);
+	else
+		curr_data->node.data.in_fd = fd[0];
 }

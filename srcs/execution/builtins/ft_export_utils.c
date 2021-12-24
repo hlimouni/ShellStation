@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_export.c                                        :+:      :+:    :+:   */
+/*   ft_export_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/03 11:02:38 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/23 19:50:16 by hlimouni         ###   ########.fr       */
+/*   Created: 2021/12/24 10:02:48 by hlimouni          #+#    #+#             */
+/*   Updated: 2021/12/24 12:12:29 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "execution.h"
+#include "../execution.h"
 
-void	swap_strings(char **s1, char **s2)
+static void	swap_strings(char **s1, char **s2)
 {
 	char	*tmp;
 
@@ -41,48 +41,6 @@ void	sort_env(char **name, char **value, int len)
 		}
 		i++;
 	}
-}
-
-int	invalid_option_error(char *arg)
-{
-	ft_putstr_fd("minishell: export: ", 2);
-	write(2, arg, 2);
-	ft_putstr_fd(": invalid option\n", 2);
-	ft_putstr_fd("export: usage: export [-nf]", 2);
-	ft_putstr_fd("[name[=value] ...] or export -p\n", 2);
-	g_vars.last_err_num = 2;
-	return (0);
-}
-
-int	invalid_identifier_error(char *arg)
-{
-	ft_putstr_fd("minishell: export: '", 2);
-	ft_putstr_fd(arg, 2);
-	ft_putstr_fd("': not a valid identifier\n", 2);
-	g_vars.last_err_num = 1;
-	return (0);
-}
-
-int	is_arg_valid(char *arg)
-{
-	int	i;
-	int	namelen;
-
-	if (*arg == '-')
-		return (invalid_option_error(arg));
-	if (ft_isdigit(*arg))
-		return (invalid_identifier_error(arg));
-	i = 0;
-	while (arg[i] && ft_strncmp(&arg[i], "+=", 2)
-		&& arg[i] != '=')
-		i++;
-	namelen = i;
-	i = 0;
-	while (i < namelen && (ft_isalnum(arg[i]) || arg[i] == '_'))
-		i++;
-	if (i < namelen)
-		return (invalid_identifier_error(arg));
-	return (namelen);
 }
 
 /*
@@ -152,73 +110,4 @@ void	add_valid_env_variable(char *arg, int valid_namelen)
 			ft_strdup(&arg[valid_namelen + 1]));
 	else
 		add_new_element(&g_vars.env_table.value, NULL);
-}
-
-void	update_env(t_data *data)
-{
-	int	j;
-	int	valid_namelen;
-
-	j = 1;
-	while (j < data->argc)
-	{
-		valid_namelen = is_arg_valid(data->argv[j]);
-		if (valid_namelen)
-		{
-			if (!ft_strncmp(&data->argv[j][valid_namelen], "+=", 2))
-				append_to_env_value(data->argv[j], valid_namelen);
-			else
-				add_valid_env_variable(data->argv[j], valid_namelen);
-		}
-		j++;
-	}
-}
-
-void	copy_env(char ***env_names, char ***env_values)
-{
-	int	i;
-
-	*env_names = malloc(sizeof(char *)
-			* (g_vars.env_table.name.used_size + 1));
-	*env_values = malloc(sizeof(char *)
-			* (g_vars.env_table.value.used_size + 1));
-	i = 0;
-	while (i < g_vars.env_table.name.used_size)
-	{
-		(*env_names)[i] = g_vars.env_table.name.elements[i];
-		(*env_values)[i] = g_vars.env_table.value.elements[i];
-		i++;
-	}
-	(*env_names)[i] = g_vars.env_table.name.elements[i];
-	(*env_values)[i] = g_vars.env_table.name.elements[i];
-}
-
-void	print_env(void)
-{
-	int		i;
-	char	**env_names;
-	char	**env_values;
-
-	copy_env(&env_names, &env_values);
-	sort_env(env_names, env_values, g_vars.env_table.name.used_size);
-	i = 0;
-	while (i < g_vars.env_table.name.used_size)
-	{
-		if (!env_values[i])
-			printf("declare -x %s\n", env_names[i]);
-		else if (env_names[i] && env_values[i]
-			&& ft_strcmp(env_names[i], "_"))
-			printf("declare -x %s=\"%s\"\n", env_names[i], env_values[i]);
-		i++;
-	}
-	free(env_names);
-	free(env_values);
-}
-
-void	ft_export(t_data *data)
-{
-	if (!data->argv[1])
-		print_env();
-	else
-		update_env(data);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_input.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iltafah <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 16:40:58 by iltafah           #+#    #+#             */
-/*   Updated: 2021/07/09 11:28:32 by iltafah          ###   ########.fr       */
+/*   Updated: 2021/12/24 13:59:00 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,27 +54,27 @@ void	call_suitable_func(t_func_ptr *func, t_rdline *rdl_v, int key, char c)
 void	start_key_action(t_rdline *rdl_vars, int key, char c)
 {
 	static t_func_ptr	func_ptrs[22] = {
-		{NULL}, {NULL},
-		{.first = start_up_arrow_action},
-		{.first = start_down_arrow_action},
-		{.first = start_left_arrow_action},
-		{.first = start_right_arrow_action},
-		{.first = start_enter_action},
-		{.first = start_backspace_action},
-		{.first = start_home_action},
-		{.first = start_end_action},
-		{.first = start_shift_right_arrow_action},
-		{.first = start_shift_left_arrow_action},
-		{.first = start_ctl_up_arrow_action},
-		{.first = start_ctl_down_arrow_action},
-		{.first = start_ctl_right_arrow_action},
-		{.first = start_ctl_left_arrow_action},
-		{.first = start_ctl_s_action},
-		{.first = start_ctl_v_action},
-		{.first = start_ctl_x_action},
-		{.first = exit_program},
-		{.first = start_tab_action},
-		{.second = start_printable_action}
+	{NULL}, {NULL},
+	{.first = start_up_arrow_action},
+	{.first = start_down_arrow_action},
+	{.first = start_left_arrow_action},
+	{.first = start_right_arrow_action},
+	{.first = start_enter_action},
+	{.first = start_backspace_action},
+	{.first = start_home_action},
+	{.first = start_end_action},
+	{.first = start_shift_right_arrow_action},
+	{.first = start_shift_left_arrow_action},
+	{.first = start_ctl_up_arrow_action},
+	{.first = start_ctl_down_arrow_action},
+	{.first = start_ctl_right_arrow_action},
+	{.first = start_ctl_left_arrow_action},
+	{.first = start_ctl_s_action},
+	{.first = start_ctl_v_action},
+	{.first = start_ctl_x_action},
+	{.first = exit_program},
+	{.first = start_tab_action},
+	{.second = start_printable_action}
 	};
 
 	call_suitable_func(func_ptrs, rdl_vars, key, c);

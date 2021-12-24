@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iariss <iariss@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 16:31:43 by iltafah           #+#    #+#             */
-/*   Updated: 2021/07/16 10:58:22 by iariss           ###   ########.fr       */
+/*   Updated: 2021/12/24 13:57:51 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ typedef struct s_list
 
 char				*convert_int_to_str(int num);
 int					count_digits(int num);
+void				free_2d_array(char ***arr);
+char				*ft_strjoin3(const char *s1, const char *s2,
+						const char *s3);
 int					ft_strlen_utf8(char *str);
 void				*ft_memset(void *b, int c, size_t len);
 void				ft_bzero(void *s, size_t n);

@@ -24,19 +24,27 @@ srcs/readline/readline.h \
 srcs/readline/readline_typedefs.h \
 srcs/vectors/vectors.h
 
-SRC := srcs/ft_minishell.c \
-srcs/free_2d_array.c \
+SRC := srcs/minishell.c \
 srcs/environment/convert_env_table_to_array.c \
 srcs/environment/create_env_table.c \
 srcs/environment/get_value_of_env_name.c \
-srcs/execution/ft_export.c \
-srcs/execution/ft_echo.c \
-srcs/execution/ft_unset.c \
-srcs/execution/ft_cd.c \
-srcs/execution/ft_exit.c \
 srcs/execution/ft_exec.c \
-srcs/execution/ft_env.c \
-srcs/execution/ft_pwd.c \
+srcs/execution/ft_execbuiltin.c \
+srcs/execution/exec_level_signals.c \
+srcs/execution/wait_for_children.c \
+srcs/execution/init_pipe.c \
+srcs/execution/handle_redirections.c \
+srcs/execution/get_data.c \
+srcs/execution/builtins/ft_export.c \
+srcs/execution/builtins/ft_export_error_handeling.c \
+srcs/execution/builtins/ft_export_utils.c \
+srcs/execution/builtins/ft_echo.c \
+srcs/execution/builtins/ft_unset.c \
+srcs/execution/builtins/ft_cd.c \
+srcs/execution/builtins/ft_exit.c \
+srcs/execution/builtins/ft_exit_utils.c \
+srcs/execution/builtins/ft_env.c \
+srcs/execution/builtins/ft_pwd.c \
 srcs/freeing_time/free_abstract_syntax_tree.c \
 srcs/freeing_time/free_array_of_pointers.c \
 srcs/freeing_time/free_main_allocated_memory.c \

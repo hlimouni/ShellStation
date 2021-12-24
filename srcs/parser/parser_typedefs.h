@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/13 19:37:34 by iltafah           #+#    #+#             */
-/*   Updated: 2021/12/16 11:30:20 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/24 14:00:24 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ typedef struct s_pipe_content
 	int				*pids;
 	int				og_in;
 	int				og_out;
-	t_dir	dir;
+	t_dir			dir;
 }	t_pipe_content;
 
 typedef struct s_data_content

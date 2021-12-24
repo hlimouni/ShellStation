@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 21:42:28 by iariss            #+#    #+#             */
-/*   Updated: 2021/12/23 19:44:23 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/24 12:53:56 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,5 +77,21 @@ void	free_2d_array(char ***arr);
 int		ft_isbuiltin(char *builtin);
 void	ft_close_descriptors(t_ast *pipeline_seq);
 int		ft_strcmp(const char *s1, const char *s2);
+int		is_arg_valid(char *arg);
+void	add_valid_env_variable(char *arg, int valid_namelen);
+void	append_to_env_value(char *arg, int valid_namelen);
+void	sort_env(char **name, char **value, int len);
+int		ft_execbuiltin(t_data *data);
+int		ft_isbuiltin(char *builtin);
+int		ft_error(char *name, char *desc);
+char	*get_env_value(char *name);
+int		is_strint(char *str);
+int		ft_strto_long(char *str, long *num);
+void	main_signals(void);
+void	child_signals(void);
+void	wait_for_children(t_ast *pipeline_seq);
+void	init_pipe(t_ast *curr_data, t_ast *prev_data);
+int		handle_redirections(t_ast *curr_data);
+t_data	get_data(t_ast *smpl_cmd, t_ast *pipseq);
 
 #endif

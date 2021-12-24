@@ -6,11 +6,11 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 11:25:01 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/11/24 16:47:47 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/24 12:55:02 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "libft.h"
 
 void	free_2d_array(char ***arr)
 {

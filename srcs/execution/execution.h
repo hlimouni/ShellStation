@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 21:42:28 by iariss            #+#    #+#             */
-/*   Updated: 2021/12/24 17:02:48 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/24 18:07:08 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ typedef struct s_data
 	int				*in_fd;
 	int				prev;
 	t_ast			*curr_data;
-	t_redirection	*redirs;
 }				t_data;
 
 void	ft_export(t_data *data);

@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/24 12:53:34 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/24 12:53:43 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/24 18:06:52 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ t_data	get_data(t_ast *smpl_cmd, t_ast *pipseq)
 	data.pids = pipseq->node.pipe.pids;
 	data.out_fd = &curr_data->node.data.out_fd;
 	data.in_fd = &curr_data->node.data.in_fd;
-	data.redirs = pipseq->node.data.redirections;
 	data.curr_data = curr_data;
 	data.pip_seq = pipseq;
 	return (data);

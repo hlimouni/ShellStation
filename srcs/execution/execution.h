@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/07 21:42:28 by iariss            #+#    #+#             */
-/*   Updated: 2021/12/24 18:07:08 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/25 17:51:32 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,6 @@ enum	e_builtins
 	__env,
 	__exit	
 };
-/*
-# define ARGC node.data.args_vec.used_size
-# define ARGV node.data.args_vec.elements
-# define PIPES node.pipe.pipes_count
-# define PIDS node.pipe.pids
-# define OUT_FD node.data.out_fd
-# define IN_FD node.data.in_fd
-*/
 
 typedef struct s_data
 {

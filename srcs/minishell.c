@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/20 00:34:20 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/24 17:03:17 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/25 16:53:08 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static int	init_streams(t_ast *pipeline_seq)
 	return (0);
 }
 
-static void	ft_fork_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
+static void	init_cmd_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
 {
 	t_data	data;
 	int		i;
@@ -81,7 +81,7 @@ static void	execute_line(t_ast *ast)
 				(curr_pipeline_seq->node.pipe.pipes_count + 1) * sizeof(int));
 		curr_simple_cmd = curr_pipeline_seq->node.pipe.dir.bottom;
 		curr_simple_cmd->node.data.prev_errnum = prev_err_num;
-		ft_fork_processes(curr_simple_cmd, curr_pipeline_seq);
+		init_cmd_processes(curr_simple_cmd, curr_pipeline_seq);
 		free(curr_pipeline_seq->node.pipe.pids);
 		dup2(curr_pipeline_seq->node.pipe.og_in, 0);
 		dup2(curr_pipeline_seq->node.pipe.og_out, 1);

@@ -6,7 +6,7 @@
 /*   By: hlimouni <hlimouni@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/20 00:34:20 by hlimouni          #+#    #+#             */
-/*   Updated: 2021/12/25 16:53:08 by hlimouni         ###   ########.fr       */
+/*   Updated: 2021/12/26 11:32:18 by hlimouni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ static void	init_cmd_processes(t_ast *curr_simple_cmd, t_ast *pipeline_seq)
 			data.pids[i] = fork();
 			if (data.pids[i] == 0)
 			{
-				child_signals();
 				ft_exec(&data);
 			}
 			i++;
